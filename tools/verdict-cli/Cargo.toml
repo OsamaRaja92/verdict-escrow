@@ -1,0 +1,32 @@
+[package]
+name = "verdict-cli"
+version = "0.1.0"
+description = "Open, sign and settle verdict escrows from the command line"
+license = "MIT"
+publish = false
+edition.workspace = true
+rust-version = "1.89.0"
+
+[[bin]]
+name = "verdict"
+path = "src/main.rs"
+
+[dependencies]
+# Same cohort as the program; see the note in the program's manifest.
+anchor-lang = { version = "1.2.1", default-features = false, features = ["solana-v4"] }
+verdict-escrow = { path = "../../programs/verdict-escrow", features = ["no-entrypoint"] }
+
+solana-hash = "4.6"
+solana-instruction = "3.5"
+solana-keypair = "3.1"
+solana-message = { version = "4.6", features = ["wincode"] }
+solana-signer = "3.0"
+solana-transaction = { version = "4.3", features = ["wincode"] }
+
+# A plain JSON-RPC client, rather than the full Solana client stack: this tool
+# makes four calls and should stay small enough to read in one sitting.
+anyhow = "1.0"
+base64 = "0.23"
+clap = { version = "4.6", features = ["derive"] }
+serde_json = "1.0"
+ureq = { version = "3.5", features = ["json"] }

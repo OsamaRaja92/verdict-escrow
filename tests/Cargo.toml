@@ -1,0 +1,49 @@
+[package]
+name = "verdict-escrow-tests"
+version = "0.1.0"
+description = "Attack and happy-path tests for the verdict escrow program"
+license = "MIT"
+publish = false
+edition.workspace = true
+# litesvm's minimum, not the program's.
+rust-version = "1.97.1"
+
+[lib]
+name = "escrow_harness"
+path = "src/lib.rs"
+
+[dependencies]
+# Same cohort as the program, or anchor-lang's `solana-v3`/`solana-v4` guard
+# fires: feature unification would otherwise switch both on at once.
+anchor-lang = { version = "1.2.1", default-features = false, features = ["solana-v4"] }
+anchor-spl = { version = "1.2.1", default-features = false, features = [
+    "solana-v4",
+    "associated_token",
+    "mint",
+    "token",
+    "token_2022",
+] }
+verdict-escrow = { path = "../programs/verdict-escrow", features = ["no-entrypoint"] }
+
+# `precompiles` is what makes LiteSVM run the real Ed25519 precompile. Without
+# it the harness would accept any signature and every forged-verdict test below
+# would pass for the wrong reason.
+litesvm = { version = "0.18.1", features = ["precompiles"] }
+litesvm-token = { version = "0.18.1", features = ["token-2022"] }
+
+solana-account = "4.3"
+solana-clock = "4.0"
+solana-instruction = "3.5"
+solana-instruction-error = "2.5"
+solana-keypair = "3.1"
+solana-message = "4.2"
+solana-sdk-ids = "3.1"
+solana-signer = "3.0"
+solana-transaction = "4.1"
+solana-transaction-error = "3.4"
+
+[lints.clippy]
+# LiteSVM's failure type carries the logs and metadata the assertions read, so
+# it is large by design. Boxing it would add noise at every call site in the
+# suite without making any test clearer.
+result_large_err = "allow"

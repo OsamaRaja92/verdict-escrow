@@ -1,0 +1,48 @@
+[package]
+name = "verdict-escrow"
+version = "0.1.0"
+description = "Escrow that pays out only against a signed verdict"
+license = "MIT"
+edition.workspace = true
+# Anchor's own minimum. The test crate needs a newer compiler, which is why it
+# is a separate package: the on-chain build stays on the toolchain Anchor
+# supports.
+rust-version = "1.89.0"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "verdict_escrow"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-log-ix-name = []
+anchor-debug = []
+custom-heap = []
+custom-panic = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+[dependencies]
+# `init-if-needed` is for the vault only; see the note on that account in
+# lib.rs for why accepting an existing associated token account is safe.
+anchor-lang = { version = "1.2.1", default-features = false, features = [
+    "solana-v4",
+    "init-if-needed",
+] }
+anchor-spl = { version = "1.2.1", default-features = false, features = [
+    "solana-v4",
+    "associated_token",
+    "mint",
+    "token",
+    "token_2022",
+] }
+# The instructions sysvar readers and the Ed25519 program id. Anchor's
+# `solana_program` shim re-exports neither, and its `compat` module is
+# explicitly not a supported surface, so depend on the two crates directly.
+# Both are already in Anchor's own graph at these versions.
+solana-instructions-sysvar = "4.0"
+solana-sdk-ids = "3.1"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }

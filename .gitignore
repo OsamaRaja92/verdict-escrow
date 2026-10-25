@@ -1,0 +1,12 @@
+target/
+.anchor/
+test-ledger/
+node_modules/
+
+# Keypairs never belong in a repository. The program keypair and the devnet
+# wallet used for the deployment live outside the working tree.
+*.json
+!package.json
+!tsconfig.json
+!.github/**/*.json
+!**/idl/*.json
